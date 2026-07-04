@@ -4,8 +4,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from shared.mixins import GroupRequiredMixin  # Importamos el mixin que creamos en shared/
-from .forms import UserRegistrationForm, UserRoleForm
-
+from .forms import UserRegistrationForm, UserRoleForm,GroupCreateForm
 class UserCreateView(GroupRequiredMixin, CreateView):
     """Vista para que el Admin registre nuevos trabajadores"""
     model = User
@@ -48,4 +47,16 @@ class UserRoleUpdateView(GroupRequiredMixin, FormView):
         user.add_to_class('groups', group) if hasattr(user, 'add_to_class') else user.groups.add(group)
         
         messages.success(self.request, f"Se asignó el rol '{group.name}' al usuario {user.username} correctamente.")
+        return super().form_valid(form)
+class GroupCreateView(GroupRequiredMixin, CreateView):
+    """Vista exclusiva para que el Admin cree nuevos roles desde la interfaz web"""
+    model = Group
+    form_class = GroupCreateForm
+    template_name = 'security/group_form.html'
+    success_url = reverse_lazy('user_list') # Redirige a la lista de usuarios al terminar
+    group_required = ['Administrador'] # Protección estricta a nivel de servidor
+
+    def form_valid(self, form):
+        group = form.save()
+        messages.success(self.request, f"El nuevo rol '{group.name}' fue creado exitosamente en el sistema.")
         return super().form_valid(form)

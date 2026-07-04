@@ -5,4 +5,5 @@ urlpatterns = [
     path('users/', views.UserListView.as_view(), name='user_list'),
     path('users/create/', views.UserCreateView.as_view(), name='user_create'),
     path('users/roles/', views.UserRoleUpdateView.as_view(), name='user_roles'),
+    path('roles/create/', views.GroupCreateView.as_view(), name='group_create'),
 ]

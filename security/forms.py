@@ -37,3 +37,24 @@ class UserRoleForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select form-select-lg'}),
         label="Asignar Rol / Grupo"
     )
+class GroupCreateForm(forms.ModelForm):
+    """Formulario minimalista para que el Admin cree nuevos Roles/Grupos desde el HTML"""
+    class Meta:
+        model = Group
+        fields = ['name']
+        labels = {
+            'name': 'Nombre del Nuevo Rol / Grupo'
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control form-control-lg',
+                'placeholder': 'Ej. Supervisor, Auditor, Contador...'
+            }),
+        }
+
+    def clean_name(self):
+        name = self.cleaned_data.get('name')
+        # Validamos que no se cree un grupo que ya existe
+        if Group.objects.filter(name__iexact=name).exists():
+            raise forms.ValidationError("Este rol o grupo ya existe en el sistema.")
+        return name
