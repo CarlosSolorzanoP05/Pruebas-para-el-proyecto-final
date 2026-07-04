@@ -126,8 +126,6 @@ python manage.py test               # Ejecutar pruebas
 ## 📝 Licencia
 
 Proyecto educativo / interno. Ajusta esta sección según corresponda.
-<<<<<<< HEAD
-
 ---
 
 ## 🆕 Nuevos Requerimientos Implementados
@@ -171,5 +169,3 @@ Se implementaron 5 requerimientos críticos sobre roles, perfil de usuario y fac
 ### Notas / supuestos
 - El proyecto ya usaba `django.contrib.auth.Group` + `Permission` (no un modelo de Rol propio), así que el "rango" se implementó sobre esa misma base para no romper el resto del sistema de permisos (`ModulePermissionRequiredMixin`, navbar dinámico, etc.).
 - `Customer.dni` (cédula/RUC ecuatoriana) se volvió opcional (`blank=True, null=True`) porque un cliente autogenerado desde `/signup/` todavía no ha proporcionado ese dato; los clientes creados manualmente por Admin/Trabajador (`CustomerCreateView`) conservan la validación completa si se llena.
-=======
->>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
