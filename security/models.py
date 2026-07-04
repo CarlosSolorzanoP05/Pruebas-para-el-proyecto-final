@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from decimal import Decimal
 from django.conf import settings
 from django.db import models
@@ -128,3 +129,8 @@ class ModulePermission(models.Model):
 
     def __str__(self):
         return 'Permisos de Módulo (sistema de menús dinámico)'
+=======
+from django.db import models
+
+# Create your models here.
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999

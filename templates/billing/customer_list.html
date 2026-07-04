@@ -25,8 +25,11 @@
           <th>Nombre Completo</th>
           <th>Correo</th>
           <th>Teléfono</th>
+<<<<<<< HEAD
           <th class="text-end">Saldo Efectivo</th>
           <th class="text-end">Saldo Tarjeta</th>
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
           <th class="text-center">Activo</th>
           <th class="text-center">Acciones</th>
         </tr>
@@ -42,8 +45,11 @@
             {% else %}—{% endif %}
           </td>
           <td>{{ item.phone|default:"—" }}</td>
+<<<<<<< HEAD
           <td class="text-end">${{ item.saldo_efectivo }}</td>
           <td class="text-end">${{ item.saldo_tarjeta }}</td>
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
           <td class="text-center">
             {% if item.is_active %}
               <span class="badge bg-success">Activo</span>
@@ -57,7 +63,11 @@
         </tr>
         {% empty %}
         <tr>
+<<<<<<< HEAD
           <td colspan="8" class="text-center text-muted py-4">No se encontraron clientes.</td>
+=======
+          <td colspan="6" class="text-center text-muted py-4">No se encontraron clientes.</td>
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         </tr>
         {% endfor %}
       </tbody>

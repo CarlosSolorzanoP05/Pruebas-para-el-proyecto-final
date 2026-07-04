@@ -1,4 +1,5 @@
 from django import forms
+<<<<<<< HEAD
 from django.contrib.auth.models import User, Group, Permission
 from django.db.models import Q
 
@@ -90,6 +91,31 @@ class UserRegistrationForm(forms.ModelForm):
         password2 = cleaned_data.get("password2")
 
         if password1 != password2:
+=======
+from django.contrib.auth.models import User, Group
+
+class UserRegistrationForm(forms.ModelForm):
+    """Formulario minimalista para registrar nuevos usuarios con contraseña oculta"""
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg'}))
+    password_confirm = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control form-control-lg'}), label="Confirmar Contraseña")
+
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control form-control-lg'}),
+            'first_name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+            'last_name': forms.TextInput(attrs={'class': 'form-control form-control-lg'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        password_confirm = cleaned_data.get("password_confirm")
+
+        if password != password_confirm:
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
             raise forms.ValidationError("Las contraseñas no coinciden.")
         return cleaned_data
 
@@ -105,6 +131,7 @@ class UserRoleForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-select form-select-lg'}),
         label="Asignar Rol / Grupo"
     )
+<<<<<<< HEAD
 class ModulePermissionChoiceField(forms.ModelMultipleChoiceField):
     """
     Por defecto, ModelMultipleChoiceField muestra str(permission), que
@@ -253,6 +280,15 @@ class GroupCreateForm(forms.ModelForm):
         fields = ['name', 'permissions']
         labels = {
             'name': 'Nombre del Nuevo Rol / Grupo',
+=======
+class GroupCreateForm(forms.ModelForm):
+    """Formulario minimalista para que el Admin cree nuevos Roles/Grupos desde el HTML"""
+    class Meta:
+        model = Group
+        fields = ['name']
+        labels = {
+            'name': 'Nombre del Nuevo Rol / Grupo'
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         }
         widgets = {
             'name': forms.TextInput(attrs={

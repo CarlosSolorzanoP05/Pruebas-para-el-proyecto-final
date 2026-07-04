@@ -8,6 +8,7 @@ class InvoiceForm(forms.ModelForm):
     """Formulario para cabecera de factura."""
     class Meta:
         model = Invoice
+<<<<<<< HEAD
         fields = ['customer', 'user', 'metodo_pago']
         widgets = {
             'customer': forms.Select(attrs={'class': 'form-select form-select-lg'}),
@@ -63,6 +64,12 @@ class InvoiceForm(forms.ModelForm):
                     'Selecciona solo una opción: Usuario del sistema O Cliente externo, no ambas.'
                 )
         return cleaned_data
+=======
+        fields = ['customer']
+        widgets = {
+            'customer': forms.Select(attrs={'class': 'form-select form-select-lg'}),
+        }
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 
 
 class InvoiceDetailForm(forms.ModelForm):

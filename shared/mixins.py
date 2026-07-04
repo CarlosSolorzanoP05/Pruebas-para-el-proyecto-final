@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.http import HttpResponse
 import io
+<<<<<<< HEAD
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.views.generic import CreateView, UpdateView
 from django.shortcuts import redirect
@@ -51,6 +52,12 @@ class StaffOrAdminRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         return redirect('billing:product_list')
 
 
+=======
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
+from django.contrib import messages
+
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 # ─────────────────────────────────────────────
 #  StaffRequiredMixin  (sin cambios)
 # ─────────────────────────────────────────────
@@ -290,6 +297,7 @@ class GroupRequiredMixin(LoginRequiredMixin):
                 messages.error(request, "No tienes permisos (Rol adecuado) para acceder a esta pantalla.")
                 return redirect('home') # O la url de tu página de inicio/dashboard
                 
+<<<<<<< HEAD
         return super().dispatch(request, *args, **kwargs)
 
 
@@ -469,3 +477,6 @@ class SuccessMessageMixin:
         )
         messages.success(request, message)
         return response
+=======
+        return super().dispatch(request, *args, **kwargs)
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999

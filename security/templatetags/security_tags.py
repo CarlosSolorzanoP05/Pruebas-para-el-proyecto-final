@@ -2,6 +2,7 @@ from django import template
 
 register = template.Library()
 
+<<<<<<< HEAD
 
 @register.filter(name='has_group')
 def has_group(user, group_name):
@@ -65,3 +66,14 @@ def has_permission(user, codename):
 
     perm_name = codename if '.' in codename else f'security.{codename}'
     return user.has_perm(perm_name)
+=======
+@register.filter(name='has_group')
+def has_group(user, group_name):
+    """
+    Filtro para verificar en los templates HTML si un usuario pertenece a un grupo.
+    Uso en el HTML: {% if request.user|has_group:"Administrador" %}
+    """
+    if user.is_superuser:
+        return True
+    return user.groups.filter(name=group_name).exists()
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999

@@ -12,6 +12,7 @@ from django.http import JsonResponse, HttpResponse
 from .models import *
 from .forms import SignUpForm, BrandForm, InvoiceForm, InvoiceDetailFormSet
 from .ProductForm import ProductForm
+<<<<<<< HEAD
 from security.models import Profile
 from shared.mixins import (
     StaffRequiredMixin, ExportMixin, export_list_response,
@@ -19,10 +20,15 @@ from shared.mixins import (
     StaffOrAdminRequiredMixin,
 )
 from shared.decorators import audit_action, module_permission_required
+=======
+from shared.mixins import StaffRequiredMixin, ExportMixin, export_list_response
+from shared.decorators import audit_action
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 from decimal import Decimal
 import io
 
 
+<<<<<<< HEAD
 def _is_self_service_user(user):
     """
     REQUERIMIENTO 4/5 - Determina si 'user' debe tratarse como el rango
@@ -36,6 +42,8 @@ def _is_self_service_user(user):
     return not user.groups.filter(name__in=['Administrador', 'Trabajador']).exists()
 
 
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 # === API: precio de producto para JS ===
 @login_required
 def product_price(request, pk):
@@ -46,6 +54,7 @@ def product_price(request, pk):
 
 # === INVOICE ===
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_invoices')
 def invoice_list(request):
     """
@@ -62,6 +71,11 @@ def invoice_list(request):
     if _is_self_service_user(request.user):
         invoices = invoices.filter(user=request.user)
 
+=======
+def invoice_list(request):
+    """Lista todas las facturas con sus totales y permite exportar a PDF/Excel."""
+    invoices = Invoice.objects.select_related('customer').all()
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     export = export_list_response(
         request, invoices, 'listado_facturas',
         ['N° Factura', 'Cliente', 'Cédula/RUC', 'Fecha', 'Subtotal', 'IVA', 'Total', 'Activa'],
@@ -77,6 +91,7 @@ def invoice_list(request):
 
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_invoices')
 def invoice_create(request):
     """
@@ -116,12 +131,21 @@ def invoice_create(request):
 
     if request.method == 'POST':
         form = InvoiceForm(request.POST, hide_customer=self_service)
+=======
+def invoice_create(request):
+    """Crea factura con sus líneas de detalle dentro de una transacción atómica."""
+    if request.method == 'POST':
+        form = InvoiceForm(request.POST)
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         formset = InvoiceDetailFormSet(request.POST)
 
         if form.is_valid() and formset.is_valid():
             # Validar stock antes de guardar
             errors = []
+<<<<<<< HEAD
             prospective_subtotal = Decimal('0')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
             for detail_form in formset:
                 if detail_form.cleaned_data and not detail_form.cleaned_data.get('DELETE', False):
                     product = detail_form.cleaned_data.get('product')
@@ -132,7 +156,10 @@ def invoice_create(request):
                                 f'Insufficient stock for "{product.name}": '
                                 f'available {product.stock}, requested {quantity}.'
                             )
+<<<<<<< HEAD
                         prospective_subtotal += product.unit_price * quantity
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
             if errors:
                 for e in errors:
                     messages.error(request, e)
@@ -140,6 +167,7 @@ def invoice_create(request):
                     'form': form, 'formset': formset, 'title': 'Create Invoice',
                 })
 
+<<<<<<< HEAD
             metodo_pago = form.cleaned_data.get('metodo_pago') or Invoice.METODO_EFECTIVO
             saldo_field = 'saldo_tarjeta' if metodo_pago == Invoice.METODO_TARJETA else 'saldo_efectivo'
             metodo_label = 'Tarjeta' if metodo_pago == Invoice.METODO_TARJETA else 'Efectivo'
@@ -170,6 +198,11 @@ def invoice_create(request):
                         invoice.customer = Customer.get_or_create_for_user(request.user)
                     invoice.save()
 
+=======
+            try:
+                with transaction.atomic():
+                    invoice = form.save()
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
                     formset.instance = invoice
                     formset.save()
 
@@ -177,6 +210,7 @@ def invoice_create(request):
                     invoice.subtotal = subtotal
                     invoice.tax = subtotal * Decimal('0.15')
                     invoice.total = invoice.subtotal + invoice.tax
+<<<<<<< HEAD
 
                     # REQUERIMIENTO 4: descontar el total del saldo del
                     # método de pago elegido y marcar la factura PAGADA.
@@ -186,6 +220,8 @@ def invoice_create(request):
                     ))
                     invoice.status = Invoice.STATUS_PAGADA
 
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
                     invoice.save()
 
                     # Descontar stock por cada línea guardada
@@ -202,7 +238,11 @@ def invoice_create(request):
             except Exception as exc:
                 messages.error(request, f'Error saving invoice: {exc}')
     else:
+<<<<<<< HEAD
         form = InvoiceForm(hide_customer=self_service)
+=======
+        form = InvoiceForm()
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         formset = InvoiceDetailFormSet()
 
     return render(request, 'billing/invoice_form.html', {
@@ -213,7 +253,10 @@ def invoice_create(request):
 
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_invoices')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 def invoice_update(request, pk):
     """
     Edita una factura existente junto con sus líneas de detalle.
@@ -226,12 +269,18 @@ def invoice_update(request, pk):
     purchasing.purchase_edit para mantener el inventario consistente.
     """
     invoice = get_object_or_404(
+<<<<<<< HEAD
         Invoice.objects.select_related('customer', 'user').prefetch_related('details__product'),
         pk=pk
     )
     if _is_self_service_user(request.user):
         messages.error(request, 'No tienes permiso para editar facturas.')
         return redirect('billing:invoice_list')
+=======
+        Invoice.objects.select_related('customer').prefetch_related('details__product'),
+        pk=pk
+    )
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 
     if request.method == 'POST':
         form = InvoiceForm(request.POST, instance=invoice)
@@ -328,7 +377,10 @@ def invoice_update(request, pk):
 
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_invoices')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 def invoice_pdf(request, pk):
     """
     Genera el PDF de UNA factura individual (documento imprimible), a
@@ -352,7 +404,11 @@ def invoice_pdf(request, pk):
         )
 
     invoice = get_object_or_404(
+<<<<<<< HEAD
         Invoice.objects.select_related('customer', 'user').prefetch_related('details__product'),
+=======
+        Invoice.objects.select_related('customer').prefetch_related('details__product'),
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         pk=pk
     )
 
@@ -371,6 +427,7 @@ def invoice_pdf(request, pk):
     elements.append(Paragraph(f'FACTURA {invoice.invoice_number}', styles['Title']))
     elements.append(Spacer(1, 0.3 * cm))
 
+<<<<<<< HEAD
     # Datos de cabecera (el comprador puede ser un Cliente externo o un
     # Usuario del sistema, ver REQUERIMIENTO 2 en billing/models.py).
     if invoice.customer_id:
@@ -384,6 +441,12 @@ def invoice_pdf(request, pk):
         f'<b>{"Usuario" if invoice.user_id and not invoice.customer_id else "Cliente"}:</b> {invoice.buyer_label}<br/>'
         f'<b>Cédula/RUC:</b> {dni_display}<br/>'
         f'<b>Método de Pago:</b> {invoice.get_metodo_pago_display()}<br/>'
+=======
+    # Datos de cabecera
+    info = (
+        f'<b>Cliente:</b> {invoice.customer.full_name}<br/>'
+        f'<b>Cédula/RUC:</b> {invoice.customer.dni}<br/>'
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         f'<b>Fecha:</b> {invoice.invoice_date.strftime("%d/%m/%Y %H:%M")}'
     )
     elements.append(Paragraph(info, styles['Normal']))
@@ -444,6 +507,7 @@ def invoice_pdf(request, pk):
 
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_invoices')
 def invoice_detail(request, pk):
     """Muestra el detalle completo de una factura."""
@@ -457,10 +521,20 @@ def invoice_detail(request, pk):
     if _is_self_service_user(request.user) and invoice.user_id != request.user.id:
         messages.error(request, 'No tienes permiso para ver esta factura.')
         return redirect('billing:invoice_list')
+=======
+def invoice_detail(request, pk):
+    """Muestra el detalle completo de una factura."""
+    invoice = get_object_or_404(
+        Invoice.objects.select_related('customer')
+                       .prefetch_related('details__product'),
+        pk=pk
+    )
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     return render(request, 'billing/invoice_detail.html', {'invoice': invoice})
 
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_invoices')
 def invoice_delete(request, pk):
     """Elimina una factura, devuelve stock al inventario y usa transacción atómica."""
@@ -468,6 +542,10 @@ def invoice_delete(request, pk):
         messages.error(request, 'No tienes permiso para eliminar facturas.')
         return redirect('billing:invoice_list')
 
+=======
+def invoice_delete(request, pk):
+    """Elimina una factura, devuelve stock al inventario y usa transacción atómica."""
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     invoice = get_object_or_404(
         Invoice.objects.prefetch_related('details__product'), pk=pk
     )
@@ -492,6 +570,7 @@ def invoice_delete(request, pk):
 @login_required
 @audit_action('VIEW_HOME')
 def home(request):
+<<<<<<< HEAD
     """
     Dashboard dinámico: además de que el HTML oculta/muestra secciones
     según el permiso del Rol (ver home.html + has_permission), aquí en
@@ -516,6 +595,16 @@ def home(request):
         context['total_invoices'] = Invoice.objects.count()
         context['recent_invoices'] = Invoice.objects.select_related('customer').all()[:5]
 
+=======
+    context = {
+        'total_brands': Brand.objects.count(),
+        'total_products': Product.objects.count(),
+        'total_customers': Customer.objects.count(),
+        'total_invoices': Invoice.objects.count(),
+        'recent_invoices': Invoice.objects.all()[:5],
+        'low_stock': Product.objects.filter(stock__lte=5, is_active=True),
+    }
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     return render(request, 'billing/home.html', context)
 
 
@@ -571,7 +660,10 @@ def logout_view(request):
 
 # === BRAND (FBV) ===
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_products')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 @audit_action('LIST_BRANDS')
 def brand_list(request):
     brands = Brand.objects.all()
@@ -588,14 +680,20 @@ def brand_list(request):
     return render(request, 'billing/brand_list.html', {'brands': brands})
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_products')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 @audit_action('LIST_BRANDS')
 def brand_detail(request, pk):
     brand = get_object_or_404(Brand, pk=pk)
     return render(request, 'billing/brand_detail.html', {'object': brand})
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_products')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 @audit_action('LIST_BRANDS')
 def brand_create(request):
     if request.method == 'POST':
@@ -609,7 +707,10 @@ def brand_create(request):
     return render(request, 'billing/brand_form.html', {'form': form, 'title': 'Create Brand'})
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_products')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 @audit_action('LIST_BRANDS')
 def brand_update(request, pk):
     brand = get_object_or_404(Brand, pk=pk)
@@ -624,7 +725,10 @@ def brand_update(request, pk):
     return render(request, 'billing/brand_form.html', {'form': form, 'title': 'Edit Brand'})
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_products')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 @audit_action('LIST_BRANDS')
 def brand_delete(request, pk):
     brand = get_object_or_404(Brand, pk=pk)
@@ -636,8 +740,12 @@ def brand_delete(request, pk):
 
 
 # === PRODUCTGROUP (CBV) ===
+<<<<<<< HEAD
 class ProductGroupListView(ModulePermissionRequiredMixin, ExportMixin, ListView):
     permission_required = 'security.view_products'
+=======
+class ProductGroupListView(LoginRequiredMixin, ExportMixin, ListView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = ProductGroup
     template_name = 'billing/productgroup_list.html'
     context_object_name = 'items'
@@ -649,39 +757,59 @@ class ProductGroupListView(ModulePermissionRequiredMixin, ExportMixin, ListView)
         lambda obj: obj.created_at.strftime('%d/%m/%Y %H:%M'),
     ]
 
+<<<<<<< HEAD
 class ProductGroupDetailView(ModulePermissionRequiredMixin, DetailView):
     permission_required = 'security.view_products'
+=======
+class ProductGroupDetailView(LoginRequiredMixin, DetailView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = ProductGroup
     template_name = 'billing/productgroup_detail.html'
     context_object_name = 'object'
 
+<<<<<<< HEAD
 class ProductGroupCreateView(ModulePermissionRequiredMixin, SuccessMessageMixin, CreateView):
     permission_required = 'security.view_products'
     success_message_model_name = 'Grupo de Productos'
+=======
+class ProductGroupCreateView(LoginRequiredMixin, CreateView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = ProductGroup
     fields = ['name', 'is_active']
     template_name = 'billing/productgroup_form.html'
     success_url = reverse_lazy('billing:productgroup_list')
 
+<<<<<<< HEAD
 class ProductGroupUpdateView(ModulePermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     permission_required = 'security.view_products'
     success_message_model_name = 'Grupo de Productos'
+=======
+class ProductGroupUpdateView(LoginRequiredMixin, UpdateView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = ProductGroup
     fields = ['name', 'is_active']
     template_name = 'billing/productgroup_form.html'
     success_url = reverse_lazy('billing:productgroup_list')
 
+<<<<<<< HEAD
 class ProductGroupDeleteView(ModulePermissionRequiredMixin, StaffRequiredMixin, SuccessMessageMixin, DeleteView):
     permission_required = 'security.view_products'
     success_message_model_name = 'Grupo de Productos'
+=======
+class ProductGroupDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = ProductGroup
     template_name = 'billing/productgroup_confirm_delete.html'
     success_url = reverse_lazy('billing:productgroup_list')
 
 
 # === SUPPLIER (CBV) ===
+<<<<<<< HEAD
 class SupplierListView(ModulePermissionRequiredMixin, ExportMixin, ListView):
     permission_required = 'security.view_products'
+=======
+class SupplierListView(LoginRequiredMixin, ExportMixin, ListView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Supplier
     template_name = 'billing/supplier_list.html'
     context_object_name = 'items'
@@ -690,39 +818,59 @@ class SupplierListView(ModulePermissionRequiredMixin, ExportMixin, ListView):
     export_headers = ['Razón Social', 'Contacto', 'Correo', 'Teléfono', 'Dirección', 'Activo']
     export_fields = ['name', 'contact_name', 'email', 'phone', 'address', 'is_active']
 
+<<<<<<< HEAD
 class SupplierDetailView(ModulePermissionRequiredMixin, DetailView):
     permission_required = 'security.view_products'
+=======
+class SupplierDetailView(LoginRequiredMixin, DetailView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Supplier
     template_name = 'billing/supplier_detail.html'
     context_object_name = 'object'
 
+<<<<<<< HEAD
 class SupplierCreateView(ModulePermissionRequiredMixin, SuccessMessageMixin, CreateView):
     permission_required = 'security.view_products'
     success_message_model_name = 'Proveedor'
+=======
+class SupplierCreateView(LoginRequiredMixin, CreateView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Supplier
     fields = ['name', 'contact_name', 'email', 'phone', 'address', 'is_active']
     template_name = 'billing/supplier_form.html'
     success_url = reverse_lazy('billing:supplier_list')
 
+<<<<<<< HEAD
 class SupplierUpdateView(ModulePermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     permission_required = 'security.view_products'
     success_message_model_name = 'Proveedor'
+=======
+class SupplierUpdateView(LoginRequiredMixin, UpdateView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Supplier
     fields = ['name', 'contact_name', 'email', 'phone', 'address', 'is_active']
     template_name = 'billing/supplier_form.html'
     success_url = reverse_lazy('billing:supplier_list')
 
+<<<<<<< HEAD
 class SupplierDeleteView(ModulePermissionRequiredMixin, StaffRequiredMixin, SuccessMessageMixin, DeleteView):
     permission_required = 'security.view_products'
     success_message_model_name = 'Proveedor'
+=======
+class SupplierDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Supplier
     template_name = 'billing/supplier_confirm_delete.html'
     success_url = reverse_lazy('billing:supplier_list')
 
 
 # === PRODUCT (CBV) ===
+<<<<<<< HEAD
 class ProductListView(ModulePermissionRequiredMixin, ExportMixin, ListView):
     permission_required = 'security.view_products'
+=======
+class ProductListView(LoginRequiredMixin, ExportMixin, ListView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Product
     template_name = 'billing/product_list.html'
     context_object_name = 'items'
@@ -789,17 +937,26 @@ class ProductListView(ModulePermissionRequiredMixin, ExportMixin, ListView):
         return ctx
 
 
+<<<<<<< HEAD
 class ProductDetailView(ModulePermissionRequiredMixin, DetailView):
     """Vista de detalle del Producto (aquí viven los botones Editar/Eliminar)."""
     permission_required = 'security.view_products'
+=======
+class ProductDetailView(LoginRequiredMixin, DetailView):
+    """Vista de detalle del Producto (aquí viven los botones Editar/Eliminar)."""
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Product
     template_name = 'billing/product_detail.html'
     context_object_name = 'product'
 
 
+<<<<<<< HEAD
 class ProductCreateView(StaffOrAdminRequiredMixin, ModulePermissionRequiredMixin, SuccessMessageMixin, CreateView):
     permission_required = 'security.view_products'
     success_message_model_name = 'Producto'
+=======
+class ProductCreateView(LoginRequiredMixin, CreateView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Product
     form_class = ProductForm
     template_name = 'billing/product_form.html'
@@ -810,9 +967,13 @@ class ProductCreateView(StaffOrAdminRequiredMixin, ModulePermissionRequiredMixin
         ctx['title'] = 'Create Product'
         return ctx
 
+<<<<<<< HEAD
 class ProductUpdateView(StaffOrAdminRequiredMixin, ModulePermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     permission_required = 'security.view_products'
     success_message_model_name = 'Producto'
+=======
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Product
     form_class = ProductForm
     template_name = 'billing/product_form.html'
@@ -823,31 +984,47 @@ class ProductUpdateView(StaffOrAdminRequiredMixin, ModulePermissionRequiredMixin
         ctx['title'] = 'Edit Product'
         return ctx
 
+<<<<<<< HEAD
 class ProductDeleteView(StaffOrAdminRequiredMixin, ModulePermissionRequiredMixin, StaffRequiredMixin, SuccessMessageMixin, DeleteView):
     permission_required = 'security.view_products'
     success_message_model_name = 'Producto'
+=======
+class ProductDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Product
     template_name = 'billing/product_confirm_delete.html'
     success_url = reverse_lazy('billing:product_list')
 
 
 # === CUSTOMER (CBV) ===
+<<<<<<< HEAD
 class CustomerListView(ModulePermissionRequiredMixin, ExportMixin, ListView):
     permission_required = 'security.view_customers'
+=======
+class CustomerListView(LoginRequiredMixin, ExportMixin, ListView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Customer
     template_name = 'billing/customer_list.html'
     context_object_name = 'items'
 
     export_filename = 'listado_clientes'
+<<<<<<< HEAD
     export_headers = ['Cédula/RUC', 'Nombre', 'Apellido', 'Correo', 'Teléfono', 'Dirección', 'Saldo Efectivo', 'Saldo Tarjeta', 'Activo']
     export_fields = ['dni', 'first_name', 'last_name', 'email', 'phone', 'address', 'saldo_efectivo', 'saldo_tarjeta', 'is_active']
 
 class CustomerDetailView(ModulePermissionRequiredMixin, DetailView):
     permission_required = 'security.view_customers'
+=======
+    export_headers = ['Cédula/RUC', 'Nombre', 'Apellido', 'Correo', 'Teléfono', 'Dirección', 'Activo']
+    export_fields = ['dni', 'first_name', 'last_name', 'email', 'phone', 'address', 'is_active']
+
+class CustomerDetailView(LoginRequiredMixin, DetailView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Customer
     template_name = 'billing/customer_detail.html'
     context_object_name = 'object'
 
+<<<<<<< HEAD
 class CustomerCreateView(ModulePermissionRequiredMixin, SuccessMessageMixin, CreateView):
     permission_required = 'security.view_customers'
     success_message_model_name = 'Cliente'
@@ -867,18 +1044,38 @@ class CustomerUpdateView(ModulePermissionRequiredMixin, SuccessMessageMixin, Upd
 class CustomerDeleteView(ModulePermissionRequiredMixin, StaffRequiredMixin, SuccessMessageMixin, DeleteView):
     permission_required = 'security.view_customers'
     success_message_model_name = 'Cliente'
+=======
+class CustomerCreateView(LoginRequiredMixin, CreateView):
+    model = Customer
+    fields = ['dni', 'first_name', 'last_name', 'email', 'phone', 'address', 'is_active']
+    template_name = 'billing/customer_form.html'
+    success_url = reverse_lazy('billing:customer_list')
+
+class CustomerUpdateView(LoginRequiredMixin, UpdateView):
+    model = Customer
+    fields = ['dni', 'first_name', 'last_name', 'email', 'phone', 'address', 'is_active']
+    template_name = 'billing/customer_form.html'
+    success_url = reverse_lazy('billing:customer_list')
+
+class CustomerDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Customer
     template_name = 'billing/customer_confirm_delete.html'
     success_url = reverse_lazy('billing:customer_list')
 
 
 # === INVOICE CBV (no usadas directamente pero mantenidas) ===
+<<<<<<< HEAD
 class InvoiceListView(ModulePermissionRequiredMixin, ListView):
     permission_required = 'security.view_invoices'
+=======
+class InvoiceListView(LoginRequiredMixin, ListView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Invoice
     template_name = 'billing/invoice_list.html'
     context_object_name = 'items'
 
+<<<<<<< HEAD
 class InvoiceCreateView(ModulePermissionRequiredMixin, SuccessMessageMixin, CreateView):
     permission_required = 'security.view_invoices'
     success_message_model_name = 'Factura'
@@ -898,6 +1095,21 @@ class InvoiceUpdateView(ModulePermissionRequiredMixin, SuccessMessageMixin, Upda
 class InvoiceDeleteView(ModulePermissionRequiredMixin, StaffRequiredMixin, SuccessMessageMixin, DeleteView):
     permission_required = 'security.view_invoices'
     success_message_model_name = 'Factura'
+=======
+class InvoiceCreateView(LoginRequiredMixin, CreateView):
+    model = Invoice
+    fields = ['customer']
+    template_name = 'billing/invoice_form.html'
+    success_url = reverse_lazy('billing:invoice_list')
+
+class InvoiceUpdateView(LoginRequiredMixin, UpdateView):
+    model = Invoice
+    fields = ['customer']
+    template_name = 'billing/invoice_form.html'
+    success_url = reverse_lazy('billing:invoice_list')
+
+class InvoiceDeleteView(LoginRequiredMixin, StaffRequiredMixin, DeleteView):
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Invoice
     template_name = 'billing/invoice_confirm_delete.html'
     success_url = reverse_lazy('billing:invoice_list')

@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 from decimal import Decimal
 from django.conf import settings
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 from django.db import models
 from shared.validators import validate_cedula_ec
 
@@ -74,6 +77,7 @@ class Product(models.Model):
 
 
 class Customer(models.Model):
+<<<<<<< HEAD
     """
     Clientes. OneToOne con CustomerProfile.
 
@@ -105,12 +109,17 @@ class Customer(models.Model):
         verbose_name='Cuenta de Usuario asociada',
         help_text='Cuenta de login (si este cliente se autogestiona sus propias facturas).',
     )
+=======
+    """Clientes. OneToOne con CustomerProfile."""
+    dni = models.CharField(max_length=13, unique=True, verbose_name='DNI/RUC', validators=[validate_cedula_ec])
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
+<<<<<<< HEAD
 
     # REQUERIMIENTO 5 - Doble Saldo para Clientes Externos:
     # Mismos dos saldos que existen en security.Profile para los
@@ -132,6 +141,8 @@ class Customer(models.Model):
         help_text='Saldo disponible en tarjeta de este cliente.',
     )
 
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -140,6 +151,7 @@ class Customer(models.Model):
     @property
     def full_name(self): return f'{self.first_name} {self.last_name}'
 
+<<<<<<< HEAD
     @classmethod
     def get_or_create_for_user(cls, user):
         """
@@ -157,6 +169,8 @@ class Customer(models.Model):
         )
         return customer
 
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 
 class CustomerProfile(models.Model):
     """Perfil extendido. OneToOne con Customer."""
@@ -189,6 +203,7 @@ def generate_invoice_number():
 
 class Invoice(models.Model):
     """Cabecera de factura."""
+<<<<<<< HEAD
 
     STATUS_PENDIENTE = 'PENDIENTE'
     STATUS_PAGADA = 'PAGADA'
@@ -237,10 +252,17 @@ class Invoice(models.Model):
         verbose_name='Método de Pago',
     )
 
+=======
+    invoice_number = models.CharField(
+        max_length=20, unique=True, blank=True, verbose_name='Invoice Number'
+    )
+    customer = models.ForeignKey(Customer, on_delete=models.PROTECT, related_name='invoices')
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     invoice_date = models.DateTimeField(auto_now_add=True)
     subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     tax = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+<<<<<<< HEAD
     status = models.CharField(
         max_length=10, choices=STATUS_CHOICES, default=STATUS_PAGADA,
         verbose_name='Estado',
@@ -251,12 +273,15 @@ class Invoice(models.Model):
             "vista frena la operación ANTES de crear ningún registro."
         ),
     )
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     is_active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['-invoice_date']
 
     def __str__(self):
+<<<<<<< HEAD
         return f'Invoice {self.invoice_number} - {self.buyer_label}'
 
     @property
@@ -285,6 +310,9 @@ class Invoice(models.Model):
         if self.customer_id:
             return self.customer
         return None
+=======
+        return f'Invoice {self.invoice_number} - {self.customer}'
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:

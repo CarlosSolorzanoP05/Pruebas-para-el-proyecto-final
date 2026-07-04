@@ -22,14 +22,20 @@
   <div class="card border-0 shadow-sm mb-4 rounded-4 sg-doc-header">
     <div class="card-body p-4">
       <div class="row g-4">
+<<<<<<< HEAD
         {% if form.customer or form.user %}
         <div class="col-md-3">
           <div class="sg-field-label mb-1">Cliente Externo</div>
+=======
+        <div class="col-md-6">
+          <div class="sg-field-label mb-1">Cliente</div>
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
           {{ form.customer }}
           {% for error in form.customer.errors %}
           <div class="text-danger small mt-1">{{ error }}</div>
           {% endfor %}
         </div>
+<<<<<<< HEAD
         <div class="col-md-3">
           <div class="sg-field-label mb-1">Usuario del Sistema</div>
           {{ form.user }}
@@ -59,6 +65,8 @@
             {% endfor %}
           {% endif %}
         </div>
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         <div class="col-6 col-md-2">
           <div class="sg-field-label mb-1">N° de Factura</div>
           <div class="sg-readonly-value">

@@ -27,7 +27,11 @@ class CustomerProfileInline(admin.StackedInline):
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
+<<<<<<< HEAD
     list_display = ['dni', 'last_name', 'first_name', 'email', 'saldo_efectivo', 'saldo_tarjeta']
+=======
+    list_display = ['dni', 'last_name', 'first_name', 'email']
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     inlines = [CustomerProfileInline]
 
 class InvoiceDetailInline(admin.TabularInline):
@@ -35,7 +39,11 @@ class InvoiceDetailInline(admin.TabularInline):
 
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
+<<<<<<< HEAD
     list_display = ['id', 'customer', 'user', 'metodo_pago', 'status', 'invoice_date', 'total']
     list_filter = ['metodo_pago', 'status']
+=======
+    list_display = ['id', 'customer', 'invoice_date', 'total']
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     inlines = [InvoiceDetailInline]
 

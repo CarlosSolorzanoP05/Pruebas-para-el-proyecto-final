@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+<<<<<<< HEAD
 from django.views.generic import CreateView, ListView, FormView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -39,6 +40,14 @@ class ProfileView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
+=======
+from django.views.generic import CreateView, ListView, FormView
+from django.urls import reverse_lazy
+from django.contrib.auth.models import User, Group
+from django.contrib import messages
+from shared.mixins import GroupRequiredMixin  # Importamos el mixin que creamos en shared/
+from .forms import UserRegistrationForm, UserRoleForm,GroupCreateForm
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 class UserCreateView(GroupRequiredMixin, CreateView):
     """Vista para que el Admin registre nuevos trabajadores"""
     model = User
@@ -50,7 +59,11 @@ class UserCreateView(GroupRequiredMixin, CreateView):
     def form_valid(self, form):
         # Guardamos el usuario cifrando la contraseña automáticamente
         user = form.save(commit=False)
+<<<<<<< HEAD
         user.set_password(form.cleaned_data['password1'])
+=======
+        user.set_password(form.cleaned_data['password'])
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         user.save()
         messages.success(self.request, f"Usuario {user.username} creado con éxito.")
         return super().form_valid(form)
@@ -63,12 +76,15 @@ class UserListView(GroupRequiredMixin, ListView):
     context_object_name = 'users'
     group_required = ['Administrador']  # Solo accesible por el Administrador
 
+<<<<<<< HEAD
     def get_queryset(self):
         # prefetch_related evita el problema N+1: sin esto, el template
         # que muestra el/los grupo(s) de cada usuario (ej. {{ u.groups.all }})
         # lanzaría UNA consulta extra por cada fila de la tabla.
         return User.objects.prefetch_related('groups').order_by('username')
 
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 
 class UserRoleUpdateView(GroupRequiredMixin, FormView):
     """Vista para asignarle o cambiarle el Grupo/Rol a un usuario de forma dinámica"""
@@ -97,6 +113,7 @@ class GroupCreateView(GroupRequiredMixin, CreateView):
     group_required = ['Administrador'] # Protección estricta a nivel de servidor
 
     def form_valid(self, form):
+<<<<<<< HEAD
         # form.save() ya guarda tanto el Group (name) como su M2M
         # 'permissions' (checkboxes marcados por el Admin), porque
         # 'permissions' es un campo declarado dentro de Meta.fields
@@ -108,4 +125,8 @@ class GroupCreateView(GroupRequiredMixin, CreateView):
             self.request,
             f"El nuevo rol '{group.name}' fue creado con {n_perms} permiso(s) de módulo asignado(s)."
         )
+=======
+        group = form.save()
+        messages.success(self.request, f"El nuevo rol '{group.name}' fue creado exitosamente en el sistema.")
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         return super().form_valid(form)

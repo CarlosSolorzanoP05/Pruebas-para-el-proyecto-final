@@ -7,19 +7,30 @@ from django.db import transaction
 from django.db.models import F
 from decimal import Decimal
 from billing.models import Product
+<<<<<<< HEAD
 from shared.mixins import ExportMixin, ModulePermissionRequiredMixin
 from shared.decorators import module_permission_required
+=======
+from shared.mixins import ExportMixin
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 from .models import Purchase, PurchaseDetail
 from .forms import PurchaseForm, PurchaseDetailFormSet
 
 
 # === PURCHASE LIST (CBV + ExportMixin) ===
 # Misma arquitectura que ProductListView (billing/views.py):
+<<<<<<< HEAD
 # ModulePermissionRequiredMixin + ExportMixin + ListView, exportando a
 # PDF/Excel con la lógica genérica definida en shared/mixins.py.
 class PurchaseListView(ModulePermissionRequiredMixin, ExportMixin, ListView):
     """Lista todas las compras con sus totales y permite exportar a PDF/Excel."""
     permission_required = 'security.view_purchases'
+=======
+# LoginRequiredMixin + ExportMixin + ListView, exportando a PDF/Excel
+# con la lógica genérica definida en shared/mixins.py.
+class PurchaseListView(LoginRequiredMixin, ExportMixin, ListView):
+    """Lista todas las compras con sus totales y permite exportar a PDF/Excel."""
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     model = Purchase
     template_name = 'purchasing/purchase_list.html'
     context_object_name = 'items'
@@ -40,7 +51,10 @@ class PurchaseListView(ModulePermissionRequiredMixin, ExportMixin, ListView):
 
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_purchases')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 def purchase_create(request):
     """Crea una compra con sus lineas de detalle dentro de una transacción atómica."""
     if request.method == 'POST':
@@ -85,7 +99,10 @@ def purchase_create(request):
 
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_purchases')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 def purchase_edit(request, pk):
     """
     Edita una compra existente junto con sus líneas de detalle.
@@ -156,7 +173,10 @@ def purchase_edit(request, pk):
 
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_purchases')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 def purchase_detail(request, pk):
     """Muestra el detalle completo de una compra."""
     purchase = get_object_or_404(
@@ -168,7 +188,10 @@ def purchase_detail(request, pk):
 
 
 @login_required
+<<<<<<< HEAD
 @module_permission_required('security.view_purchases')
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 def purchase_delete(request, pk):
     """Elimina una compra, resta stock al inventario (validando negativos) y usa transacción atómica."""
     purchase = get_object_or_404(

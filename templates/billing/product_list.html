@@ -1,5 +1,8 @@
 {% extends 'billing/base.html' %}
+<<<<<<< HEAD
 {% load security_tags %}
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 {% block title %}Products{% endblock %}
 
 {% block content %}
@@ -22,9 +25,13 @@
 {# ── Encabezado ── #}
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h2 class="mb-0">📦 Products</h2>
+<<<<<<< HEAD
   {% if user.is_superuser or user|has_group:"Administrador" or user|has_group:"Trabajador" %}
     <a href="{% url 'billing:product_create' %}" class="btn btn-primary">+ Nuevo Producto</a>
   {% endif %}
+=======
+  <a href="{% url 'billing:product_create' %}" class="btn btn-primary">+ Nuevo Producto</a>
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 </div>
 
 {# ── Panel de filtro dinámico ── #}

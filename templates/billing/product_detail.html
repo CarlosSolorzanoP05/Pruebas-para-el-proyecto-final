@@ -1,5 +1,8 @@
 {% extends 'billing/base.html' %}
+<<<<<<< HEAD
 {% load security_tags %}
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 {% block title %}{{ product.name }}{% endblock %}
 {% block content %}
 
@@ -125,10 +128,15 @@
     </div>
 
     <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+<<<<<<< HEAD
       {% if user.is_superuser or user|has_group:"Administrador" or user|has_group:"Trabajador" %}
       <a href="{% url 'billing:product_update' product.pk %}" class="btn btn-warning">✏️ Editar Producto</a>
       <a href="{% url 'billing:product_delete' product.pk %}" class="btn btn-danger">🗑 Eliminar Producto</a>
       {% endif %}
+=======
+      <a href="{% url 'billing:product_update' product.pk %}" class="btn btn-warning">✏️ Editar Producto</a>
+      <a href="{% url 'billing:product_delete' product.pk %}" class="btn btn-danger">🗑 Eliminar Producto</a>
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
     </div>
   </div>
 </div>

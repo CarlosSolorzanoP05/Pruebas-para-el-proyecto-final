@@ -25,6 +25,7 @@
         {% if user.is_authenticated %}
         
         <li class="nav-item"><a class="nav-link" href="{% url 'billing:home' %}"><i class="fa-solid fa-gauge me-1"></i>Dashboard</a></li>
+<<<<<<< HEAD
 
         {% if user|has_permission:"view_products" %}
           <li class="nav-item"><a class="nav-link" href="{% url 'billing:product_list' %}"><i class="fa-solid fa-box me-1"></i>Productos</a></li>
@@ -39,25 +40,51 @@
         {% endif %}
 
         {% if user|has_permission:"view_reports" %}
+=======
+        
+        {% if user|has_group:"Administrador" or user|has_group:"Analista de Compras" %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'billing:product_list' %}"><i class="fa-solid fa-box me-1"></i>Productos</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'purchasing:purchase_list' %}"><i class="fa-solid fa-cart-shopping me-1"></i>Compras</a></li>
+        {% endif %}
+        
+        {% if user|has_group:"Administrador" or user|has_group:"Vendedor" %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'billing:invoice_list' %}"><i class="fa-solid fa-file-invoice me-1"></i>Facturas</a></li>
+        {% endif %}
+        
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="fa-solid fa-chart-line me-1"></i>Reportes
           </a>
           <ul class="dropdown-menu">
+<<<<<<< HEAD
             {% if user|has_permission:"view_products" %}
+=======
+            {% if user|has_group:"Administrador" or user|has_group:"Analista de Compras" %}
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
               <li><a class="dropdown-item" href="{% url 'billing:brand_list' %}">Marcas</a></li>
               <li><a class="dropdown-item" href="{% url 'billing:productgroup_list' %}">Grupos de Productos</a></li>
               <li><a class="dropdown-item" href="{% url 'billing:supplier_list' %}">Proveedores</a></li>
             {% endif %}
+<<<<<<< HEAD
 
             {% if user|has_permission:"view_customers" %}
+=======
+            
+            {% if user|has_group:"Administrador" or user|has_group:"Vendedor" %}
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
               <li><a class="dropdown-item" href="{% url 'billing:customer_list' %}">Clientes</a></li>
             {% endif %}
           </ul>
         </li>
+<<<<<<< HEAD
         {% endif %}
 
         {% if user|has_permission:"view_security" %}
+=======
+
+        {% if user|has_group:"Administrador" %}
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle text-warning" href="#" role="button" data-bs-toggle="dropdown">
             <i class="fa-solid fa-shield-halved me-1"></i>Security
@@ -66,6 +93,10 @@
             <li><a class="dropdown-item" href="{% url 'user_list' %}"><i class="fa-solid fa-users me-2"></i>Control de Usuarios</a></li>
             <li><a class="dropdown-item" href="{% url 'user_create' %}"><i class="fa-solid fa-user-plus me-2"></i>Nuevo Trabajador</a></li>
             <li><a class="dropdown-item" href="{% url 'user_roles' %}"><i class="fa-solid fa-user-gear me-2"></i>Asignar Roles</a></li>
+<<<<<<< HEAD
+=======
+            <li><a class="dropdown-item text-primary" href="{% url 'group_create' %}"><i class="fa-solid fa-plus me-2"></i>Crear Nuevo Rol</a></li> </ul>
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
           </ul>
         </li>
         {% endif %}
@@ -86,20 +117,34 @@
             <li class="px-2 py-1 text-center">
               {% if user.is_superuser %}
                 <span class="badge bg-danger sg-role-badge w-100">SuperAdmin</span>
+<<<<<<< HEAD
               {% else %}
                 <span class="badge bg-secondary sg-role-badge w-100">
                   {{ user.groups.all|join:", "|default:"Sin Rol Asignado" }}
                 </span>
+=======
+              {% elif user|has_group:"Administrador" %}
+                <span class="badge bg-danger sg-role-badge w-100">Admin</span>
+              {% elif user|has_group:"Vendedor" %}
+                <span class="badge bg-success sg-role-badge w-100">Vendedor</span>
+              {% elif user|has_group:"Analista de Compras" %}
+                <span class="badge bg-info text-dark sg-role-badge w-100">Compras</span>
+              {% else %}
+                <span class="badge bg-secondary sg-role-badge w-100">Usuario</span>
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
               {% endif %}
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
+<<<<<<< HEAD
               <a class="dropdown-item" href="{% url 'my_profile' %}">
                 <i class="fa-solid fa-id-card me-2"></i>Mis Datos
               </a>
             </li>
             <li><hr class="dropdown-divider"></li>
             <li>
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
               <form method="post" action="{% url 'logout' %}" class="d-inline">
                 {% csrf_token %}
                 <button type="submit" class="dropdown-item text-danger">

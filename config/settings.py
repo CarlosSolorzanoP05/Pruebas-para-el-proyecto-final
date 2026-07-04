@@ -119,11 +119,14 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+<<<<<<< HEAD
 # Coincide con el tipo de PK que ya usan todas las migraciones
 # existentes del proyecto (BigAutoField). Sin esto, Django asume
 # AutoField por defecto y makemigrations genera diffs falsos de 'id'.
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

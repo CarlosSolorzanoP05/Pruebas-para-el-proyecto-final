@@ -1,8 +1,11 @@
 import logging
 from functools import wraps
 from django.utils import timezone
+<<<<<<< HEAD
 from django.contrib import messages
 from django.shortcuts import redirect
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
 
 # Configurar logger para auditoría
 # Los mensajes se guardan en la consola y pueden redirigirse a archivo
@@ -72,6 +75,7 @@ def audit_action(action_name):
 
         return wrapper
     return decorator
+<<<<<<< HEAD
 
 
 def module_permission_required(perm, redirect_url='billing:home', raise_exception=False):
@@ -132,3 +136,5 @@ def module_permission_required(perm, redirect_url='billing:home', raise_exceptio
 
         return wrapper
     return decorator
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999

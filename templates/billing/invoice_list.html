@@ -27,7 +27,10 @@
           <th class="text-end">Subtotal</th>
           <th class="text-end">IVA</th>
           <th class="text-end">Total</th>
+<<<<<<< HEAD
           <th class="text-center">Estado</th>
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
           <th class="text-center">Acciones</th>
         </tr>
       </thead>
@@ -35,14 +38,19 @@
         {% for inv in items %}
         <tr>
           <td class="fw-semibold text-muted">{{ inv.invoice_number }}</td>
+<<<<<<< HEAD
           <td class="fw-semibold">
             {{ inv.buyer_label }}
             {% if inv.user_id %}<span class="badge bg-info text-dark ms-1">Usuario</span>{% else %}<span class="badge bg-secondary ms-1">Cliente</span>{% endif %}
           </td>
+=======
+          <td class="fw-semibold">{{ inv.customer }}</td>
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
           <td class="text-center text-muted small">{{ inv.invoice_date|date:"d/m/Y" }}</td>
           <td class="text-end">${{ inv.subtotal }}</td>
           <td class="text-end">${{ inv.tax }}</td>
           <td class="text-end fw-bold text-success">${{ inv.total }}</td>
+<<<<<<< HEAD
           <td class="text-center">
             {% if inv.status == 'PAGADA' %}
               <span class="badge bg-success">Pagada</span>
@@ -50,13 +58,19 @@
               <span class="badge bg-warning text-dark">Pendiente</span>
             {% endif %}
           </td>
+=======
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
           <td class="text-center text-nowrap">
             <a href="{% url 'billing:invoice_detail' inv.pk %}" class="btn btn-sm btn-info text-white">👁 Ver Detalle</a>
           </td>
         </tr>
         {% empty %}
         <tr>
+<<<<<<< HEAD
           <td colspan="8" class="text-center text-muted py-4">Aún no hay facturas registradas.</td>
+=======
+          <td colspan="7" class="text-center text-muted py-4">Aún no hay facturas registradas.</td>
+>>>>>>> 72f4066fa5748c0921f8bba8fa79ee453233c999
         </tr>
         {% endfor %}
       </tbody>
