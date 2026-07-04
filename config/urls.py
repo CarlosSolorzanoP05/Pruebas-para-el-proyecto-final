@@ -28,6 +28,7 @@ urlpatterns = [
     path('accounts/logout/', billing_views.logout_view, name='logout'),
     path('', include('billing.urls')),
     path('purchases/', include('purchasing.urls')),
+    path('security/', include('security.urls')),
 ]
 
 if settings.DEBUG:

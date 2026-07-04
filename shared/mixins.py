@@ -2,6 +2,9 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.http import HttpResponse
 import io
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
+from django.contrib import messages
 
 # ─────────────────────────────────────────────
 #  StaffRequiredMixin  (sin cambios)
@@ -216,3 +219,30 @@ class ExportMixin:
     def _get_export_queryset(self, request):
         # get_queryset() ya aplica los filtros definidos en la vista
         return self.get_queryset()
+class GroupRequiredMixin(LoginRequiredMixin):
+    """
+    Mixin que permite el acceso solo a usuarios que pertenecen a ciertos grupos.
+    Uso en la vista: group_required = ['Administrador', 'Vendedor']
+    """
+    group_required = None
+
+    def dispatch(self, request, *args, **kwargs):
+        # 1. Verificar si está logueado (heredado de LoginRequiredMixin)
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        
+        # 2. Si el usuario es superusuario (admin total), pasa directo
+        if request.user.is_superuser:
+            return super().dispatch(request, *args, **kwargs)
+
+        # 3. Validar si se definieron grupos requeridos
+        if self.group_required:
+            # Obtenemos los nombres de los grupos del usuario actual
+            user_groups = request.user.groups.values_list('name', flat=True)
+            
+            # Verificamos si hay coincidencia entre los grupos requeridos y los del usuario
+            if not any(group in user_groups for group in self.group_required):
+                messages.error(request, "No tienes permisos (Rol adecuado) para acceder a esta pantalla.")
+                return redirect('home') # O la url de tu página de inicio/dashboard
+                
+        return super().dispatch(request, *args, **kwargs)

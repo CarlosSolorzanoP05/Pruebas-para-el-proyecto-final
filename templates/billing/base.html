@@ -1,3 +1,4 @@
+{% load security_tags %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -10,7 +11,6 @@
   <link href="{% static 'billing/css/custom.css' %}" rel="stylesheet">
 </head>
 <body>
-<!-- Barra de navegación superior -->
 <nav class="navbar navbar-expand-lg navbar-dark sg-navbar shadow-sm sticky-top">
   <div class="container-fluid px-4">
     <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'billing:home' %}">
@@ -23,23 +23,51 @@
     <div class="collapse navbar-collapse" id="nav">
       <ul class="navbar-nav me-auto">
         {% if user.is_authenticated %}
+        
         <li class="nav-item"><a class="nav-link" href="{% url 'billing:home' %}"><i class="fa-solid fa-gauge me-1"></i>Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'billing:product_list' %}"><i class="fa-solid fa-box me-1"></i>Productos</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'purchasing:purchase_list' %}"><i class="fa-solid fa-cart-shopping me-1"></i>Compras</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'billing:invoice_list' %}"><i class="fa-solid fa-file-invoice me-1"></i>Facturas</a></li>
+        
+        {% if user|has_group:"Administrador" or user|has_group:"Analista de Compras" %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'billing:product_list' %}"><i class="fa-solid fa-box me-1"></i>Productos</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'purchasing:purchase_list' %}"><i class="fa-solid fa-cart-shopping me-1"></i>Compras</a></li>
+        {% endif %}
+        
+        {% if user|has_group:"Administrador" or user|has_group:"Vendedor" %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'billing:invoice_list' %}"><i class="fa-solid fa-file-invoice me-1"></i>Facturas</a></li>
+        {% endif %}
+        
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="fa-solid fa-chart-line me-1"></i>Reportes
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="{% url 'billing:brand_list' %}">Marcas</a></li>
-            <li><a class="dropdown-item" href="{% url 'billing:productgroup_list' %}">Grupos de Productos</a></li>
-            <li><a class="dropdown-item" href="{% url 'billing:supplier_list' %}">Proveedores</a></li>
-            <li><a class="dropdown-item" href="{% url 'billing:customer_list' %}">Clientes</a></li>
+            {% if user|has_group:"Administrador" or user|has_group:"Analista de Compras" %}
+              <li><a class="dropdown-item" href="{% url 'billing:brand_list' %}">Marcas</a></li>
+              <li><a class="dropdown-item" href="{% url 'billing:productgroup_list' %}">Grupos de Productos</a></li>
+              <li><a class="dropdown-item" href="{% url 'billing:supplier_list' %}">Proveedores</a></li>
+            {% endif %}
+            
+            {% if user|has_group:"Administrador" or user|has_group:"Vendedor" %}
+              <li><a class="dropdown-item" href="{% url 'billing:customer_list' %}">Clientes</a></li>
+            {% endif %}
+          </ul>
+        </li>
+
+        {% if user|has_group:"Administrador" %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle text-warning" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="fa-solid fa-shield-halved me-1"></i>Security
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'user_list' %}"><i class="fa-solid fa-users me-2"></i>Control de Usuarios</a></li>
+            <li><a class="dropdown-item" href="{% url 'user_create' %}"><i class="fa-solid fa-user-plus me-2"></i>Nuevo Trabajador</a></li>
+            <li><a class="dropdown-item" href="{% url 'user_roles' %}"><i class="fa-solid fa-user-gear me-2"></i>Asignar Roles</a></li>
           </ul>
         </li>
         {% endif %}
+
+        {% endif %}
       </ul>
+      
       <ul class="navbar-nav">
       {% if user.is_authenticated %}
         <li class="nav-item dropdown">
@@ -50,13 +78,17 @@
             <span>{{ user.first_name|default:user.username }}</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end p-2">
-            <li class="px-2 py-1">
+            <li class="px-2 py-1 text-center">
               {% if user.is_superuser %}
-                <span class="badge bg-danger sg-role-badge">Rol: Administrador</span>
-              {% elif user.is_staff %}
-                <span class="badge bg-warning text-dark sg-role-badge">Rol: Trabajador</span>
+                <span class="badge bg-danger sg-role-badge w-100">SuperAdmin</span>
+              {% elif user|has_group:"Administrador" %}
+                <span class="badge bg-danger sg-role-badge w-100">Admin</span>
+              {% elif user|has_group:"Vendedor" %}
+                <span class="badge bg-success sg-role-badge w-100">Vendedor</span>
+              {% elif user|has_group:"Analista de Compras" %}
+                <span class="badge bg-info text-dark sg-role-badge w-100">Compras</span>
               {% else %}
-                <span class="badge bg-secondary sg-role-badge">Rol: Usuario</span>
+                <span class="badge bg-secondary sg-role-badge w-100">Usuario</span>
               {% endif %}
             </li>
             <li><hr class="dropdown-divider"></li>
@@ -81,11 +113,11 @@
     </ul>
   </div>
 </nav>
-<!-- Contenido principal -->
+
 <div class="container-fluid px-4 mt-4">
   {% if messages %}
     {% for m in messages %}
-    <div class="alert alert-{{ m.tags }} alert-dismissible fade show rounded-3 shadow-sm border-0">
+    <div class="alert alert-{% if m.tags == 'error' %}danger{% else %}{{ m.tags }}{% endif %} alert-dismissible fade show rounded-3 shadow-sm border-0">
       {{ m }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     {% endfor %}

@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'billing',
-    'purchasing',   # Nueva app de compras
+    'purchasing',# Nueva app de compras
+    'security',# Nueva app de seguridad
 ]
 
 MIDDLEWARE = [
